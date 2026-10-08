@@ -135,15 +135,71 @@ async function main() {
     server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
 
-      // Find the tool
-      const tool = allTools.find((t) => t.name === name);
-      if (!tool) {
-        throw new Error(`Tool not found: ${name}`);
-      }
-
       try {
+        // Find the tool
+        const tool = allTools.find((t) => t.name === name);
+        if (!tool) {
+          console.error(`[Tool Not Found] Tool '${name}' is not registered`);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(
+                  {
+                    tool: name,
+                    success: false,
+                    error: `Tool not found: ${name}`,
+                  },
+                  null,
+                  2
+                ),
+              },
+            ],
+            isError: true,
+          };
+        }
+
         // Execute the tool
         const result = await tool.execute(args || {});
+
+        // Check if tool returned an explicit failure result
+        if (
+          result &&
+          typeof result === 'object' &&
+          'success' in result &&
+          (result as any).success === false
+        ) {
+          const res = result as any;
+          console.error(
+            `[Tool Failure] ${name}: ${res.error || 'Execution failed'}${
+              res.suggestion ? ` | Suggestion: ${res.suggestion}` : ''
+            }`
+          );
+
+          const errorPayload: Record<string, any> = {
+            tool: name,
+            success: false,
+            error: res.error || 'Tool execution failed',
+          };
+
+          if (res.suggestion) {
+            errorPayload.suggestion = res.suggestion;
+          }
+
+          if (res.data !== undefined) {
+            errorPayload.data = res.data;
+          }
+
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(serializeBigInt(errorPayload), null, 2),
+              },
+            ],
+            isError: true,
+          };
+        }
 
         // Serialize BigInt values to strings before JSON.stringify
         const serializedResult = serializeBigInt(result);
@@ -157,18 +213,24 @@ async function main() {
           ],
         };
       } catch (error: any) {
+        // Log the full stack trace to stderr with the tool name (never stdout for STDIO transport!)
+        console.error(`[Tool Execution Failure] Tool '${name}' threw an error:`, error?.stack || error);
+
+        const errorPayload: Record<string, any> = {
+          tool: name,
+          success: false,
+          error: error?.message || 'Tool execution failed',
+        };
+
+        if (error?.suggestion) {
+          errorPayload.suggestion = error.suggestion;
+        }
+
         return {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(
-                {
-                  success: false,
-                  error: error.message || 'Tool execution failed',
-                },
-                null,
-                2
-              ),
+              text: JSON.stringify(errorPayload, null, 2),
             },
           ],
           isError: true,
