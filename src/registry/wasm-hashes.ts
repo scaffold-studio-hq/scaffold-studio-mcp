@@ -46,17 +46,3 @@ export const WASM_HASHES: Record<WasmTemplate, string> = {
   nft_royalties: '20ec5596febd0f5af3acba820acd6215405abb4da5f55abdc1d70411e3e2b1aa',
   nft_access_control: '4aae4698fd3f60e10ab5d07a89dac06f9bcdc4580c92b4030c352536afdd4164',
 };
-
-/**
- * Get WASM hash by template name
- */
-export function getWasmHash(template: WasmTemplate): string {
-  return WASM_HASHES[template];
-}
-
-/**
- * Get WASM hash as Buffer
- */
-export function getWasmHashBuffer(template: WasmTemplate): Buffer {
-  return Buffer.from(WASM_HASHES[template], 'hex');
-}
