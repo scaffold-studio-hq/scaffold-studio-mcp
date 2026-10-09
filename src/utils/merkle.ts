@@ -122,28 +122,6 @@ function generateProof(tree: Buffer[][], leafIndex: number): string[] {
 }
 
 /**
- * Verify a merkle proof
- * @param leaf - The voter leaf data
- * @param proof - Array of sibling hashes
- * @param root - Expected root hash
- * @returns true if proof is valid
- */
-export function verifyMerkleProof(
-  leaf: VoterLeaf,
-  proof: string[],
-  root: string
-): boolean {
-  let hash = hashLeaf(leaf);
-
-  for (const siblingHex of proof) {
-    const sibling = Buffer.from(siblingHex, 'hex');
-    hash = hashPair(hash, sibling);
-  }
-
-  return hash.toString('hex') === root;
-}
-
-/**
  * Create merkle root from simple address list
  * Convenience function for equal-weight voting
  * @param addresses - Array of Stellar addresses
@@ -154,15 +132,3 @@ export function createMerkleRootFromAddresses(addresses: string[]): string {
   return buildMerkleTree(voters).root;
 }
 
-/**
- * Format merkle root for Soroban contract
- * @param root - Hex string root
- * @returns Formatted for BytesN<32> parameter
- */
-export function formatRootForSoroban(root: string): string {
-  // Ensure 64 characters (32 bytes)
-  if (root.length !== 64) {
-    throw new Error(`Invalid root length: ${root.length}, expected 64`);
-  }
-  return root;
-}
