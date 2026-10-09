@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build:bindings": "node scripts/build-bindings.mjs",
-    "test": "node --test test/allowhttp.test.ts test/salt.test.ts test/NFTContractClient.test.ts",
+    "test": "node --test test/allowhttp.test.ts test/salt.test.ts test/GovernanceFactoryClient.test.ts",
     "build": "tsup",
     "dev": "tsup --watch",
     "start": "node dist/index.js",
