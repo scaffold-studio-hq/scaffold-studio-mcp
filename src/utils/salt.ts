@@ -14,6 +14,11 @@ export function generateSalt(): string {
   return crypto.randomBytes(32).toString('hex');
 }
 
+/** Deterministic deployment salt; retained for the public API and salt regressions. */
+export function generateDeterministicSalt(seed: string): string {
+  return crypto.createHash('sha256').update(seed).digest('hex');
+}
+
 /**
  * Generate multiple unique salts
  * @param count - Number of salts to generate

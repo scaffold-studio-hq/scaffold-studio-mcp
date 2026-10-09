@@ -1,7 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { StrKey } from '@stellar/stellar-sdk';
 import { UtilitiesService } from '../src/plugins/utilities/utilities.service.ts';
-import type { StellarClient } from '../../core/WalletClientBase.js';
+import type { StellarClient } from '../src/core/WalletClientBase.js';
 
 describe('UtilitiesService', () => {
   const service = new UtilitiesService();
@@ -56,8 +57,8 @@ describe('UtilitiesService', () => {
 
     it('creates merkle root for valid voter addresses', async () => {
       const addresses = [
-        'GBTESTADDRESSFORVOTER1111111111111111111111111111111111',
-        'GBTESTADDRESSFORVOTER2222222222222222222222222222222222',
+        StrKey.encodeEd25519PublicKey(Buffer.alloc(32, 1)),
+        StrKey.encodeEd25519PublicKey(Buffer.alloc(32, 2)),
       ];
       const res = await service.createMerkleRoot(mockClient, { addresses });
       assert.equal(res.leaf_count, 2);
@@ -69,8 +70,8 @@ describe('UtilitiesService', () => {
 
   describe('buildMerkleTree', () => {
     it('returns a plain-object proofs map (not a Map) on a two-voter tree', async () => {
-      const voter1 = 'GBTESTADDRESSFORVOTER1111111111111111111111111111111111';
-      const voter2 = 'GBTESTADDRESSFORVOTER2222222222222222222222222222222222';
+      const voter1 = StrKey.encodeEd25519PublicKey(Buffer.alloc(32, 1));
+      const voter2 = StrKey.encodeEd25519PublicKey(Buffer.alloc(32, 2));
       const voters = [
         { address: voter1, voting_power: '100' },
         { address: voter2, voting_power: '200' },
@@ -101,7 +102,7 @@ describe('UtilitiesService', () => {
 
     it('classifies a C... valid contract address as contract', async () => {
       // Valid Stellar 56-character Contract address
-      const contractAddress = 'CA3D5KRYMCMCZKHS7KJDQ26XRUCXDNDKA37TM52HQ6TVMWCZ35T45BTI';
+      const contractAddress = StrKey.encodeContract(Buffer.alloc(32, 3));
       const res = await service.validateAddress(mockClient, { address: contractAddress });
       assert.equal(res.valid, true);
       assert.equal(res.address, contractAddress);
