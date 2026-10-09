@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { serializeBigInt } from '../src/utils/serialization.ts';
+import { serializeBigInt } from './serialization.js';
 
 test('serializeBigInt: converts top-level BigInt to string', () => {
   const value = 1234567890123456789n;

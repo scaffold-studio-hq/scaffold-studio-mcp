@@ -70,3 +70,6 @@ export {
   serializeBigInt,
   bigIntReplacer,
 } from './serialization.js';
+
+// Error handling utilities
+export { withToolError } from "./errors.js";

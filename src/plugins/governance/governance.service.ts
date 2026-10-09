@@ -1,52 +1,51 @@
 /**
  * Governance service with @Tool decorated methods
  */
-
-import { Tool } from '../../core/Tool.decorator.js';
-import type { StellarClient, ToolResult } from '../../core/index.js';
-import { GovernanceFactoryClient, type GovernanceConfig, type GovernanceType } from '../../clients/index.js';
-import type { DeployGovernanceParams, GetGovernanceByTypeParams, GetGovernanceByAdminParams } from './parameters.js';
-import { some, none } from '../../core/Option.js';
-import { serializeBigInt } from '../../utils/serialization.js';
-import { randomBytes } from 'crypto';
+import { Tool } from "../../core/Tool.decorator.js";
+import type { StellarClient, ToolResult } from "../../core/index.js";
+import { GovernanceFactoryClient, type GovernanceConfig, type GovernanceType } from "../../clients/index.js";
+import type { DeployGovernanceParams, GetGovernanceByTypeParams, GetGovernanceByAdminParams } from "./parameters.js";
+import { some, none } from "../../core/Option.js";
+import { serializeBigInt } from "../../utils/serialization.js";
+import { withToolError } from "../../utils/errors.js";
+import { randomBytes } from "crypto";
 
 export class GovernanceService {
   /**
    * Deploy a new governance contract
    */
   @Tool({
-    name: 'governance_deploy',
-    description: 'Deploy a new MerkleVoting governance contract via GovernanceFactory',
+    name: "governance_deploy",
+    description: "Deploy a new MerkleVoting governance contract via GovernanceFactory",
   })
   async deployGovernance(
     stellarClient: StellarClient,
     params: DeployGovernanceParams
   ): Promise<ToolResult<string>> {
-    try {
+    return withToolError("Failed to deploy governance", async () => {
       const governanceFactory = new GovernanceFactoryClient(stellarClient);
-
-      const salt = params.salt ? Buffer.from(params.salt, 'hex') : randomBytes(32);
+      const salt = params.salt ? Buffer.from(params.salt, "hex") : randomBytes(32);
 
       // Only MerkleVoting is supported
-      if (params.governance_type !== 'MerkleVoting') {
-        throw new Error('Only MerkleVoting governance is supported');
+      if (params.governance_type !== "MerkleVoting") {
+        throw new Error("Only MerkleVoting governance is supported");
       }
 
       // Validate root_hash required for MerkleVoting
       if (!params.root_hash) {
-        throw new Error('MerkleVoting governance requires a root_hash');
+        throw new Error("MerkleVoting governance requires a root_hash");
       }
 
       // Map governance type to enum
       const governanceType: GovernanceType = {
-        tag: 'MerkleVoting' as any,
+        tag: "MerkleVoting" as any,
         values: undefined as any,
       };
 
       // MerkleVoting configuration
-      const rootHashBuffer = Buffer.from(params.root_hash, 'hex');
+      const rootHashBuffer = Buffer.from(params.root_hash, "hex");
       const ownersOption = params.owners && params.owners.length > 0 ? some(params.owners) : none<Array<string>>();
-      const thresholdOption = typeof params.threshold === 'number' ? some(params.threshold) : none<number>();
+      const thresholdOption = typeof params.threshold === "number" ? some(params.threshold) : none<number>();
 
       const config: GovernanceConfig = {
         admin: params.admin,
@@ -70,23 +69,18 @@ export class GovernanceService {
         data: governanceAddress,
         suggestion: `${params.governance_type} governance deployed at ${governanceAddress}`,
       };
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.message || 'Failed to deploy governance',
-      };
-    }
+    });
   }
 
   /**
    * Get all deployed governance contracts
    */
   @Tool({
-    name: 'governance_get_deployed',
-    description: 'Get list of all deployed governance contracts',
+    name: "governance_get_deployed",
+    description: "Get list of all deployed governance contracts",
   })
   async getDeployedGovernance(stellarClient: StellarClient): Promise<ToolResult> {
-    try {
+    return withToolError("Failed to get deployed governance", async () => {
       const governanceFactory = new GovernanceFactoryClient(stellarClient);
       const assembled = await governanceFactory.getDeployedGovernance();
       const simulation = await assembled.simulate();
@@ -100,28 +94,22 @@ export class GovernanceService {
         data: serializedGovernance,
         suggestion: `Found ${governance.length} governance contracts`,
       };
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.message || 'Failed to get deployed governance',
-      };
-    }
+    });
   }
 
   /**
    * Get governance by type
    */
   @Tool({
-    name: 'governance_get_by_type',
-    description: 'Get governance contracts filtered by type (only MerkleVoting is supported)',
+    name: "governance_get_by_type",
+    description: "Get governance contracts filtered by type (only MerkleVoting is supported)",
   })
   async getGovernanceByType(
     stellarClient: StellarClient,
     params: GetGovernanceByTypeParams
   ): Promise<ToolResult> {
-    try {
+    return withToolError("Failed to get governance by type", async () => {
       const governanceFactory = new GovernanceFactoryClient(stellarClient);
-
       const governanceType: GovernanceType = {
         tag: params.governance_type as any,
         values: undefined as any,
@@ -139,26 +127,21 @@ export class GovernanceService {
         data: serializedGovernance,
         suggestion: `Found ${governance.length} ${params.governance_type} governance contracts`,
       };
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.message || 'Failed to get governance by type',
-      };
-    }
+    });
   }
 
   /**
    * Get governance by admin
    */
   @Tool({
-    name: 'governance_get_by_admin',
-    description: 'Get governance contracts filtered by admin address',
+    name: "governance_get_by_admin",
+    description: "Get governance contracts filtered by admin address",
   })
   async getGovernanceByAdmin(
     stellarClient: StellarClient,
     params: GetGovernanceByAdminParams
   ): Promise<ToolResult> {
-    try {
+    return withToolError("Failed to get governance by admin", async () => {
       const governanceFactory = new GovernanceFactoryClient(stellarClient);
       const assembled = await governanceFactory.getGovernanceByAdmin(params.admin);
       const simulation = await assembled.simulate();
@@ -172,23 +155,18 @@ export class GovernanceService {
         data: serializedGovernance,
         suggestion: `Found ${governance.length} governance contracts managed by ${params.admin}`,
       };
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.message || 'Failed to get governance by admin',
-      };
-    }
+    });
   }
 
   /**
    * Get governance count
    */
   @Tool({
-    name: 'governance_get_count',
-    description: 'Get total number of deployed governance contracts',
+    name: "governance_get_count",
+    description: "Get total number of deployed governance contracts",
   })
   async getGovernanceCount(stellarClient: StellarClient): Promise<ToolResult<number>> {
-    try {
+    return withToolError("Failed to get governance count", async () => {
       const governanceFactory = new GovernanceFactoryClient(stellarClient);
       const assembled = await governanceFactory.getGovernanceCount();
       const simulation = await assembled.simulate();
@@ -199,11 +177,6 @@ export class GovernanceService {
         data: count,
         suggestion: `Total governance contracts: ${count}`,
       };
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.message || 'Failed to get governance count',
-      };
-    }
+    });
   }
 }

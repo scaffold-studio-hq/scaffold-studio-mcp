@@ -9,6 +9,7 @@ import type { StellarClient, ToolResult } from '../../core/index.js';
 import { NFTFactoryClient, type NFTConfig, type NFTType } from '../../clients/index.js';
 import type { DeployNFTParams, GetNFTsByTypeParams, GetNFTsByOwnerParams } from './parameters.js';
 import { serializeBigInt } from '../../utils/serialization.js';
+import { withToolError } from '../../utils/errors.js';
 import { randomBytes } from 'crypto';
 
 export class NFTService {
@@ -115,7 +116,7 @@ export class NFTService {
     stellarClient: StellarClient,
     params: GetNFTsByTypeParams
   ): Promise<ToolResult> {
-    try {
+    return withToolError("Failed to get NFTs by type", async () => {
       const nftFactory = new NFTFactoryClient(stellarClient);
 
       const nftType: NFTType = {
@@ -135,12 +136,7 @@ export class NFTService {
         data: serializedNFTs,
         suggestion: `Found ${nfts.length} ${params.nft_type} NFTs`,
       };
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.message || 'Failed to get NFTs by type',
-      };
-    }
+    });
   }
 
   /**
@@ -154,7 +150,7 @@ export class NFTService {
     stellarClient: StellarClient,
     params: GetNFTsByOwnerParams
   ): Promise<ToolResult> {
-    try {
+    return withToolError("Failed to get NFTs by owner", async () => {
       const nftFactory = new NFTFactoryClient(stellarClient);
       const assembled = await nftFactory.getNFTsByOwner(params.owner);
       const simulation = await assembled.simulate();
@@ -168,12 +164,7 @@ export class NFTService {
         data: serializedNFTs,
         suggestion: `Found ${nfts.length} NFTs owned by ${params.owner}`,
       };
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.message || 'Failed to get NFTs by owner',
-      };
-    }
+    });
   }
 
   /**
