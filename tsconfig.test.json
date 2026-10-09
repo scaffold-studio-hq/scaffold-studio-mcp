@@ -5,5 +5,11 @@
     "declaration": false,
     "declarationMap": false
   },
-  "include": ["src/core/call-tool-handler.ts", "src/utils/serialization.ts"]
+  "include": [
+    "src/core/call-tool-handler.ts",
+    "src/utils/serialization.ts",
+    "src/core/WalletClientBase.ts",
+    "src/utils/serialization.test.ts",
+    "src/utils/builders.amount.test.ts"
+  ]
 }

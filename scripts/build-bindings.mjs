@@ -8,7 +8,7 @@ const compiler = fileURLToPath(import.meta.resolve('typescript/bin/tsc'));
 for (const entry of readdirSync(resolve(root, 'packages'), { withFileTypes: true })) {
   const project = resolve(root, 'packages', entry.name, 'tsconfig.json');
   if (!entry.isDirectory() || !existsSync(project)) continue;
-  const result = spawnSync(process.execPath, [compiler, '--project', project], { cwd: root, stdio: 'inherit' });
+  const result = spawnSync(process.execPath, [compiler, '--project', project, '--outDir', resolve(root, 'packages', entry.name, 'dist')], { cwd: root, stdio: 'inherit' });
   if (result.error) throw result.error;
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
