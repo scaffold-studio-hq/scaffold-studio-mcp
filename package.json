@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build:bindings": "node scripts/build-bindings.mjs",
-    "test": "node --test test/allowhttp.test.ts test/errors.test.ts",
+    "test": "tsc --project tsconfig.test.json && node scripts/test-offline.mjs",
     "build": "tsup",
     "dev": "tsup --watch",
     "start": "node dist/index.js",
@@ -30,7 +30,6 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@stellar/stellar-sdk": "^14.1.1",
-    "contract": "link:@stellar/stellar-sdk/contract",
     "dotenv": "^17.2.3",
     "reflect-metadata": "^0.2.2",
     "zod": "^3.23.8",
