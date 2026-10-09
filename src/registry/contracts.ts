@@ -85,13 +85,3 @@ export function getContractAddress(
   }
   return address;
 }
-
-/**
- * Check if contract is deployed on network
- */
-export function isContractDeployed(
-  contractName: ContractName,
-  network: Network
-): boolean {
-  return !!CONTRACTS[network][contractName];
-}
