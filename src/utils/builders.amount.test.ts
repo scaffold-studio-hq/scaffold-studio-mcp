@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { formatTokenAmount, parseTokenAmount } from '../src/utils/builders.ts';
+import { formatTokenAmount, parseTokenAmount } from './builders.js';
 
 test('round-trip: whole numbers convert and invert cleanly', () => {
   const wholeCases = ['0', '1', '10', '100', '1000', '1000000'];
