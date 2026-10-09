@@ -54,9 +54,9 @@ describe('GovernanceFactoryClient', () => {
     const config: GovernanceConfig = {
       admin: 'GBADMIN123456789',
       governance_type: { tag: 'MerkleVoting', values: undefined as unknown as void },
-      owners: { tag: 'Some', values: ['GBOWNER1', 'GBOWNER2'] },
-      threshold: { tag: 'Some', values: [2] },
-      root_hash: { tag: 'None', values: [] },
+      owners: ['GBOWNER1', 'GBOWNER2'],
+      threshold: 2,
+      root_hash: undefined,
       salt: Buffer.from('0123456789abcdef0123456789abcdef', 'hex'),
     };
 
@@ -65,10 +65,9 @@ describe('GovernanceFactoryClient', () => {
     assert.deepEqual(res, { result: 'CGDEPLOYEDGOVERNANCEADDRESS123' });
     assert.equal(capturedDeployArgs.deployer, 'GBDEPLOYER123');
     assert.deepEqual(capturedDeployArgs.config, config);
-    assert.equal(capturedDeployArgs.config.owners.tag, 'Some');
-    assert.deepEqual(capturedDeployArgs.config.owners.values, ['GBOWNER1', 'GBOWNER2']);
-    assert.equal(capturedDeployArgs.config.threshold.tag, 'Some');
-    assert.deepEqual(capturedDeployArgs.config.threshold.values, [2]);
+    assert.deepEqual(capturedDeployArgs.config.owners, ['GBOWNER1', 'GBOWNER2']);
+    assert.equal(capturedDeployArgs.config.threshold, 2);
+    assert.equal(capturedDeployArgs.config.root_hash, undefined);
   });
 
   it('getGovernanceByType forwards GovernanceType tag object correctly for MerkleVoting and Multisig', async () => {
@@ -130,6 +129,6 @@ describe('GovernanceFactoryClient', () => {
 
     const deployed = await client.getDeployedGovernance();
     assert.equal(called, true);
-    assert.equal(deployed.length, 2);
+    assert.deepEqual(deployed, [{ address: 'CGGOV1' }, { address: 'CGGOV2' }]);
   });
 });

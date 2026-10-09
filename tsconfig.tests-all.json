@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./.test-suite",
+    "declaration": false,
+    "declarationMap": false,
+    "rewriteRelativeImportExtensions": true
+  },
+  "include": ["test/**/*.test.ts"],
+  "exclude": ["node_modules", "dist", ".test-build", ".test-suite"]
+}
