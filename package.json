@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build:bindings": "node scripts/build-bindings.mjs",
-    "test": "tsc --project tsconfig.test.json && node scripts/test-offline.mjs",
+    "test": "tsc --project tsconfig.test.json && node --test",
     "build": "tsup",
     "dev": "tsup --watch",
     "start": "node dist/index.js",
