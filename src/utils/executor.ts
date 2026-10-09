@@ -1,11 +1,11 @@
 /**
  * Command Executor Utility
- * 
+ *
  * Handles cross-platform command execution with proper error handling
  * and PATH management for Stellar CLI tools
  */
 
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { platform } from 'os';
 
 export interface ExecuteOptions {
@@ -26,15 +26,16 @@ export interface ExecuteResult {
  */
 function ensureToolPaths(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
   const enhancedEnv = { ...env };
-  
+
   // Ensure cargo bin is in PATH
   if (!enhancedEnv.PATH?.includes('.cargo/bin')) {
     const homeDir = process.env.HOME || process.env.USERPROFILE;
     if (homeDir) {
       const separator = platform() === 'win32' ? ';' : ':';
-      const cargoBinPath = platform() === 'win32'
-        ? `${homeDir}\\.cargo\\bin`
-        : `${homeDir}/.cargo/bin`;
+      const cargoBinPath =
+        platform() === 'win32'
+          ? `${homeDir}\\.cargo\\bin`
+          : `${homeDir}/.cargo/bin`;
       enhancedEnv.PATH = `${cargoBinPath}${separator}${enhancedEnv.PATH || ''}`;
     }
   }
@@ -43,11 +44,12 @@ function ensureToolPaths(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
 }
 
 /**
- * Execute a shell command and return the result
+ * Execute a program with an argv array; arguments are never interpreted by a shell.
  */
 export function executeCommand(
-  command: string,
-  options: ExecuteOptions = {}
+  executable: string,
+  args: string[] = [],
+  options: ExecuteOptions = {},
 ): ExecuteResult {
   try {
     const env = ensureToolPaths({
@@ -55,7 +57,8 @@ export function executeCommand(
       ...options.env,
     });
 
-    const output = execSync(command, {
+    const output = execFileSync(executable, args, {
+      shell: false,
       cwd: options.cwd || process.cwd(),
       env,
       encoding: options.encoding || 'utf-8',
@@ -74,13 +77,17 @@ export function executeCommand(
     const stderr = error.stderr?.toString() || '';
     const stdout = error.stdout?.toString() || '';
     const exitCode = error.status || error.code || 1;
-    
+
     // Try to extract meaningful error message
-    let errorMessage = stderr || stdout || error.message || 'Command execution failed';
-    
+    let errorMessage =
+      stderr || stdout || error.message || 'Command execution failed';
+
     // Clean up common error patterns
-    if (errorMessage.includes('command not found') || errorMessage.includes('not found')) {
-      const commandName = command.split(' ')[0];
+    if (
+      errorMessage.includes('command not found') ||
+      errorMessage.includes('not found')
+    ) {
+      const commandName = executable;
       errorMessage = `Command '${commandName}' not found. Please install it first. + ${exitCode}`;
     }
 
@@ -92,10 +99,11 @@ export function executeCommand(
  * Execute a command and return only stdout
  */
 export function executeCommandSimple(
-  command: string,
-  options: ExecuteOptions = {}
+  executable: string,
+  args: string[] = [],
+  options: ExecuteOptions = {},
 ): string {
-  const result = executeCommand(command, options);
+  const result = executeCommand(executable, args, options);
   return result.stdout.trim();
 }
 
@@ -105,14 +113,14 @@ export function executeCommandSimple(
  */
 export function isCommandAvailable(command: string): boolean {
   const detector = platform() === 'win32' ? 'where' : 'which';
-  
+
   try {
-    executeCommand(`${detector} ${command}`, { timeout: 5000 });
+    executeCommand(detector, [command], { timeout: 5000 });
     return true;
   } catch {
     // Try executing the command with --version as fallback
     try {
-      executeCommand(`${command} --version`, { timeout: 5000 });
+      executeCommand(command, ['--version'], { timeout: 5000 });
       return true;
     } catch {
       return false;
@@ -132,11 +140,9 @@ export function isStellarCLIAvailable(): boolean {
  */
 export function isStellarRegistryAvailable(): boolean {
   try {
-    executeCommand('stellar registry --help', { timeout: 5000 });
+    executeCommand('stellar', ['registry', '--help'], { timeout: 5000 });
     return true;
   } catch {
     return false;
   }
 }
-
-

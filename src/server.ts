@@ -27,6 +27,7 @@ import { RegistryPlugin } from './plugins/registry/registry.plugin.js';
 import { UtilitiesPlugin } from './plugins/utilities/utilities.plugin.js';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import { createCallToolHandler } from './core/call-tool-handler.js';
+import { serializeBigInt } from './utils/serialization.js';
 import dotenv from 'dotenv';
 import { serializeBigInt } from './utils/serialization.js';
 

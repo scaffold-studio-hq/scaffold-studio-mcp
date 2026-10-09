@@ -46,7 +46,7 @@ export const DeploySchema = z.object({
     .string()
     .optional()
     .describe(
-      'Arguments for the constructor function (space-separated key-value pairs like --name "Token" --symbol "TKN")'
+      'Arguments for the constructor function (space-separated argv tokens; quote values with spaces, e.g. --name "Token Name" --symbol TKN). Quotes group a token; shell syntax is not evaluated.'
     ),
   working_directory: z
     .string()

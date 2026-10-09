@@ -10,6 +10,7 @@
     "src/utils/serialization.ts",
     "src/core/WalletClientBase.ts",
     "src/utils/serialization.test.ts",
-    "src/utils/builders.amount.test.ts"
+    "src/utils/builders.amount.test.ts",
+    "src/utils/builders.ts"
   ]
 }
