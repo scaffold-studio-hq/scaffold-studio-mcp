@@ -15,16 +15,6 @@ export function generateSalt(): string {
 }
 
 /**
- * Generate a deterministic salt from a seed string
- * Useful for predictable contract addresses
- * @param seed - Seed string to generate salt from
- * @returns 64-character hex string (32 bytes)
- */
-export function generateDeterministicSalt(seed: string): string {
-  return crypto.createHash('sha256').update(seed).digest('hex');
-}
-
-/**
  * Generate multiple unique salts
  * @param count - Number of salts to generate
  * @returns Array of unique salt strings

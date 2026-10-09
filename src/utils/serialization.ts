@@ -34,13 +34,3 @@ export function serializeBigInt<T>(obj: T): T {
   return obj;
 }
 
-/**
- * Custom JSON stringify replacer that handles BigInt values
- */
-export function bigIntReplacer(key: string, value: any): any {
-  if (typeof value === 'bigint') {
-    return value.toString();
-  }
-  return value;
-}
-
