@@ -24,17 +24,6 @@ export function isValidAddress(address: string): boolean {
 }
 
 /**
- * Validate and throw if address is invalid
- * @param address - Address to validate
- * @param fieldName - Name of the field for error message
- */
-export function requireValidAddress(address: string, fieldName: string): void {
-  if (!isValidAddress(address)) {
-    throw new Error(`Invalid ${fieldName} address: ${address}`);
-  }
-}
-
-/**
  * Validate token name
  * @param name - Token name
  * @returns true if valid

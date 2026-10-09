@@ -7,16 +7,13 @@
 // Salt utilities
 export {
   generateSalt,
-  generateDeterministicSalt,
   generateMultipleSalts,
 } from './salt.js';
 
 // Merkle tree utilities
 export {
   buildMerkleTree,
-  verifyMerkleProof,
   createMerkleRootFromAddresses,
-  formatRootForSoroban,
   type VoterLeaf,
   type MerkleTreeResult,
 } from './merkle.js';
@@ -24,7 +21,6 @@ export {
 // Validation utilities
 export {
   isValidAddress,
-  requireValidAddress,
   isValidTokenName,
   isValidTokenSymbol,
   isValidDecimals,
@@ -68,7 +64,6 @@ export {
 // Serialization utilities
 export {
   serializeBigInt,
-  bigIntReplacer,
 } from './serialization.js';
 
 // Error handling utilities
