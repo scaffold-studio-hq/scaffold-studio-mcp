@@ -1,12 +1,11 @@
 name: CI
-on:
-  push:
-  pull_request:
+on: [push, pull_request]
 permissions:
   contents: read
 jobs:
-  build-and-typecheck:
+  test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -18,5 +17,5 @@ jobs:
       - run: pnpm install --ignore-scripts --no-frozen-lockfile
       - run: pnpm build:bindings
       - run: pnpm typecheck
-      - run: pnpm test
       - run: pnpm build
+      - run: pnpm test
