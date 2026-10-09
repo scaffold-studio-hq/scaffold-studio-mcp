@@ -2,6 +2,7 @@
  * Registry Service - Stellar Registry CLI Integration
  */
 import { Tool } from '../../core/Tool.decorator.js';
+import { StrKey } from "@stellar/stellar-sdk";
 import type { StellarClient, ToolResult } from '../../core/index.js';
 import type * as P from './parameters.js';
 import { REGISTRY_CONTRACT } from '../../registry/contracts.js';
@@ -10,6 +11,24 @@ import {
   isStellarCLIAvailable,
   isStellarRegistryAvailable,
 } from '../../utils/executor.js';
+
+
+/**
+ * Extract a valid Stellar contract ID from output.
+ * Candidate must be a standalone token matching C[A-Z0-9]{55} and valid contract ID.
+ */
+export function extractContractId(output: string): string | null {
+  const matches = output.match(/\bC[A-Z0-9]{55}\b/g);
+  if (!matches) {
+    return null;
+  }
+  for (const match of matches) {
+    if (StrKey.isValidContract(match)) {
+      return match;
+    }
+  }
+  return null;
+}
 
 export class RegistryService {
   /**
@@ -148,9 +167,8 @@ export class RegistryService {
         timeout: 60000,
       });
 
-      // Try to extract contract ID from output (format: C[A-Z0-9]{55})
-      const contractIdMatch = output.match(/C[A-Z0-9]{55}/);
-      const contractId = contractIdMatch ? contractIdMatch[0] : null;
+      // Try to extract contract ID from output (standalone-token validated via StrKey)
+      const contractId = extractContractId(output);
 
       return {
         success: true,
@@ -158,7 +176,7 @@ export class RegistryService {
           contract_id: contractId,
           output: output.trim(),
         },
-        suggestion: `Contract deployed! Create alias with: registry_create_alias({ contract_name: "${p.contract_name}" })`,
+        suggestion: contractId ? `Contract deployed! Create alias with: registry_create_alias({ contract_name: "${p.contract_name}" })` : `Warning: Could not extract a valid contract ID from deployment output. Create alias manually if contract was deployed.`,
       };
     } catch (e: any) {
       return { success: false, error: e.message };
