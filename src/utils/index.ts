@@ -7,6 +7,7 @@
 // Salt utilities
 export {
   generateSalt,
+  generateDeterministicSalt,
   generateMultipleSalts,
 } from './salt.js';
 

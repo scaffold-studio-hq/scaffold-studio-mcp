@@ -5,6 +5,7 @@ pnpm-lock.yaml
 # Build output
 dist/
 .test-build/
+.test-suite/
 *.tsbuildinfo
 
 # Environment variables
