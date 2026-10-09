@@ -81,7 +81,7 @@ export class StellarClient {
     assembled.sign(this.context.keypair);
 
     const txHash = assembled.hash().toString('hex');
-    console.log(`Submitting transaction: ${txHash}`);
+    console.error(`Submitting transaction: ${txHash}`);
 
     // Submit
     await this.context.rpc.sendTransaction(assembled);
@@ -92,7 +92,7 @@ export class StellarClient {
 
     do {
       await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log('Checking transaction status...');
+      console.error('Checking transaction status...');
       getResponse = await this.context.rpc.getTransaction(txHash);
       status = getResponse.status;
     } while (status === 'NOT_FOUND');
