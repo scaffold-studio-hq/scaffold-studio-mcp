@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build:bindings": "node scripts/build-bindings.mjs",
-    "test": "tsc --project tsconfig.test.json && tsc --project tsconfig.tests-all.json && node scripts/test-offline.mjs",
+    "test": "tsc --project tsconfig.test.json && npx tsc && node --test test/call-tool-handler.test.mjs test/allowhttp.test.ts test/salt.test.ts test/registry.test.ts",
     "build": "tsup",
     "dev": "tsup --watch",
     "start": "node dist/index.js",
