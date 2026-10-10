@@ -29,7 +29,7 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
 import { createCallToolHandler } from './core/call-tool-handler.js';
 import { serializeBigInt } from './utils/serialization.js';
 import dotenv from 'dotenv';
-import { serializeBigInt } from './utils/serialization.js';
+
 
 // Load environment variables silently (suppress verbose output for MCP stdio communication)
 const originalConsoleLog = console.log;
