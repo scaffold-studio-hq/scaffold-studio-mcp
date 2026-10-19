@@ -10,9 +10,9 @@
   "scripts": {
     "build:bindings": "node scripts/build-bindings.mjs",
     "test": "tsc --project tsconfig.test.json && npx tsc && node --test test/call-tool-handler.test.mjs test/allowhttp.test.ts test/salt.test.ts test/registry.test.ts",
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "start": "node dist/index.js",
+    "build": "node api.js && tsup",
+    "dev": "node api.js && tsup --watch",
+    "start": "node api.js && node dist/index.js",
     "typecheck": "tsc --noEmit",
     "setup:claude": "./setup-mcp.sh --claude",
     "setup:cursor": "./setup-mcp.sh --cursor",
