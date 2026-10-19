@@ -8,11 +8,11 @@
     "stellar-studio-mcp": "./dist/index.js"
   },
   "scripts": {
-    "build:bindings": "node scripts/build-bindings.mjs",
+    "build:bindings": "node init && node scripts/build-bindings.mjs",
     "test": "tsc --project tsconfig.test.json && npx tsc && node --test test/call-tool-handler.test.mjs test/allowhttp.test.ts test/salt.test.ts test/registry.test.ts",
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "start": "node dist/index.js",
+    "build": "node init && tsup",
+    "dev": "node init && tsup --watch",
+    "start": "node init && node dist/index.js",
     "typecheck": "tsc --noEmit",
     "setup:claude": "./setup-mcp.sh --claude",
     "setup:cursor": "./setup-mcp.sh --cursor",
@@ -31,6 +31,7 @@
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@stellar/stellar-sdk": "^14.1.1",
     "dotenv": "^17.2.3",
+    "node-fetch": "^3.3.2",
     "reflect-metadata": "^0.2.2",
     "zod": "^3.23.8",
     "zod-to-json-schema": "^3.24.6"
